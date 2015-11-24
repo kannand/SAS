@@ -1,0 +1,56 @@
+
+data d1(index=(name/unique));
+     set sashelp.class(obs=5);
+data d2(index=(name/unique));
+     set sashelp.class(obs=7 firstobs=4);
+proc print data=d1;title '==d1==';
+proc print data=d2;title '==d2==';
+run;
+proc append base=d1(syncadd=no uniquesave=yes) data=d2 ;run;
+proc print data=work.d1; title '==d1 after unique append==';
+proc print data=&spdsusds; title '==Uniques append rejects==';
+/*
+
+DATA in;
+ INPUT X $1. @@; if X ne ' ';
+DATALINES;
+12345
+;
+run;
+
+data leadx(rename=x=LEADX); 
+set in;
+if _n_>1;
+run;
+
+data out;
+ set in;
+ set leadx;
+ LAGX=lag1(x);
+run;
+
+PROC PRINT DATA=out NOOBS; 
+ var lagx X LEADX;
+ TITLE 'SIMULATION OF A MISSING LEAD FUNCTION';
+RUN; 
+===================================
+==d1==
+Obs	Name	Sex	Age	Height	Weight
+1	Alfred	M	14	69.0	112.5
+2	Alice	F	13	56.5	84.0
+3	Barbara	F	13	65.3	98.0
+4	Carol	F	14	62.8	102.5
+5	Henry	M	14	63.5	102.5
+==d2==
+Obs	Name	Sex	Age	Height	Weight
+1	Carol	F	14	62.8	102.5
+2	Henry	M	14	63.5	102.5
+3	James	M	12	57.3	83.0
+4	Jane	F	12	59.8	84.5
+==d1 after unique append==
+Obs	Name	Sex	Age	Height	Weight
+1	Alfred	M	14	69.0	112.5
+2	Alice	F	13	56.5	84.0
+3	Barbara	F	13	65.3	98.0
+4	Carol	F	14	62.8	102.5
+5	Henry	M	14	63.5	102.5
