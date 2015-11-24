@@ -1,0 +1,14 @@
+options mlogic mprint symbolgen OBS=MAX;
+fILENAME MAILBOX EMAIL;
+DATA _NULL_;
+IF TODAY() NE TODAY()-1
+THEN  
+  DO;
+	FILE Mailbox TO = 'KANNAND@HOTMAIL.com'
+ 				 SUBJECT = 'Test Mail message';
+		 PUT "Hello";
+		 PUT "This is a message from the DATA step";
+  END;
+RUN;
+
+===============================
