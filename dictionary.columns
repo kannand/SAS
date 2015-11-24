@@ -1,0 +1,56 @@
+
+data in; a=1; b='2';c=3;d='4';
+proc sql print;
+	 *describe table  dictionary.columns;
+	 select * from dictionary.tables
+	 where libname=upcase('work');
+	 select * from dictionary.columns
+	 where libname=upcase('work');
+quit;
+==========================
+
+Library Name	Member Name	Member Type	DBMS Member Type	Data Set Label	Data Set Type	Date Created	Date Modified	Number of Physical Observations	Observation Length	Number of Variables	Type of Password Protection	Compression Routine	Encryption	Number of Pages	Size of File	Percent Compression	Reuse Space	Bufsize	Number of Deleted Observations	Number of Logical Observations	Longest variable name	Longest label	Maximum number of generations	Generation number	Data Set Attributes	Type of Indexes	Data Representation	Name of Collating Sequence	Sorting Type	Charset Sorted By	Requirements Vector	Data Representation Name	Data Encoding	Audit Trail Active?	Audit Before Image?	Audit Admin Image?	Audit Error Image?	Audit Data Image?	Number of Character Variables	Number of Numeric Variables
+WORK	AGE	DATA	 	 	DATA	23NOV15:22:33:05	23NOV15:22:33:05	3	24	3	---	NO	NO	1	131072	0	no	65536	0	3	6	0	0	.	ON	 	NATIVE	 	 	 	181F10113322003333010231013301233300141400200301	SOLARIS_X86_64, LINUX_X86_64, ALPHA_TRU64, LINUX_IA64	utf-8 Unicode (UTF-8)	no	no	no	no	no	1	2
+WORK	C	DATA	 	 	DATA	23NOV15:21:19:26	23NOV15:21:19:26	1349	40	5	---	NO	NO	1	131072	0	no	65536	0	1349	6	0	0	.	ON	 	NATIVE	 	 	 	181F10113322003333010231013301233300141400200301	SOLARIS_X86_64, LINUX_X86_64, ALPHA_TRU64, LINUX_IA64	utf-8 Unicode (UTF-8)	no	no	no	no	no	2	3
+WORK	HASHMERGE	DATA	 	 	DATA	23NOV15:22:33:06	23NOV15:22:33:06	3	32	4	---	NO	NO	1	131072	0	no	65536	0	3	6	0	0	.	ON	 	NATIVE	 	 	 	181F10113322003333010231013301233300141400200301	SOLARIS_X86_64, LINUX_X86_64, ALPHA_TRU64, LINUX_IA64	utf-8 Unicode (UTF-8)	no	no	no	no	no	2	2
+WORK	HAVE	DATA	 	 	DATA	23NOV15:22:35:16	23NOV15:22:35:16	7	72	11	---	NO	NO	1	131072	0	no	65536	0	7	7	0	0	.	ON	 	NATIVE	 	 	 	181F10113322003333010231013301233300141400200301	SOLARIS_X86_64, LINUX_X86_64, ALPHA_TRU64, LINUX_IA64	utf-8 Unicode (UTF-8)	no	no	no	no	no	3	8
+WORK	IN	DATA	 	 	DATA	23NOV15:22:36:38	23NOV15:22:36:38	1	24	4	---	NO	NO	1	131072	0	no	65536	0	1	1	0	0	.	ON	 	NATIVE	 	 	 	181F10113322003333010231013301233300141400200301	SOLARIS_X86_64, LINUX_X86_64, ALPHA_TRU64, LINUX_IA64	utf-8 Unicode (UTF-8)	no	no	no	no	no	2	2
+WORK	NAME	DATA	 	 	DATA	23NOV15:22:33:05	23NOV15:22:33:05	5	9	2	---	NO	NO	1	131072	0	no	65536	0	5	4	0	0	.	ON	 	NATIVE	 	 	 	181F10113322003333010231013301233300141400200301	SOLARIS_X86_64, LINUX_X86_64, ALPHA_TRU64, LINUX_IA64	utf-8 Unicode (UTF-8)	no	no	no	no	no	2	0
+WORK	T1	DATA	 	 	DATA	23NOV15:21:19:26	23NOV15:21:19:26	5	8	1	---	NO	NO	1	131072	0	no	65536	0	5	5	0	0	.	ON	 	NATIVE	 	 	 	181F10113322003333010231013301233300141400200301	SOLARIS_X86_64, LINUX_X86_64, ALPHA_TRU64, LINUX_IA64	utf-8 Unicode (UTF-8)	no	no	no	no	no	0	1
+WORK	WANT	DATA	 	 	DATA	23NOV15:22:08:40	23NOV15:22:08:40	1	40	5	---	NO	NO	1	131072	0	no	65536	0	1	13	0	0	.	ON	 	NATIVE	 	 	 	181F10113322003333010231013301233300141400200301	SOLARIS_X86_64, LINUX_X86_64, ALPHA_TRU64, LINUX_IA64	utf-8 Unicode (UTF-8)	no	no	no	no	no	1	4
+Library Name	Member Name	Member Type	Column Name	Column Type	Column Length	Column Position	Column Number in Table	Column Label	Column Format	Column Informat	Column Index Type	Order in Key Sequence	Extended Type	Not NULL?	Precision	Scale	Transcoded?
+WORK	AGE	DATA	Name	char	8	16	1	 	 	 	 	0	char	no	0	.	yes
+WORK	AGE	DATA	Age	num	8	0	2	 	 	 	 	0	num	no	0	.	yes
+WORK	AGE	DATA	Weight	num	8	8	3	 	 	 	 	0	num	no	0	.	yes
+WORK	C	DATA	Name	char	8	24	1	 	 	 	 	0	char	no	0	.	yes
+WORK	C	DATA	Sex	char	1	32	2	 	 	 	 	0	char	no	0	.	yes
+WORK	C	DATA	Age	num	8	0	3	 	 	 	 	0	num	no	0	.	yes
+WORK	C	DATA	Height	num	8	8	4	 	 	 	 	0	num	no	0	.	yes
+WORK	C	DATA	Weight	num	8	16	5	 	 	 	 	0	num	no	0	.	yes
+WORK	HASHMERGE	DATA	Name	char	8	16	1	 	 	 	 	0	char	no	0	.	yes
+WORK	HASHMERGE	DATA	Sex	char	1	24	2	 	 	 	 	0	char	no	0	.	yes
+WORK	HASHMERGE	DATA	Age	num	8	0	3	 	 	 	 	0	num	no	0	.	yes
+WORK	HASHMERGE	DATA	Weight	num	8	8	4	 	 	 	 	0	num	no	0	.	yes
+WORK	HAVE	DATA	name_ID	char	4	64	1	 	 	 	 	0	char	no	0	.	yes
+WORK	HAVE	DATA	var1	char	1	68	2	 	 	 	 	0	char	no	0	.	yes
+WORK	HAVE	DATA	var2	char	2	69	3	 	 	 	 	0	char	no	0	.	yes
+WORK	HAVE	DATA	a1	num	8	0	4	 	 	 	 	0	num	no	0	.	yes
+WORK	HAVE	DATA	a2	num	8	8	5	 	 	 	 	0	num	no	0	.	yes
+WORK	HAVE	DATA	a3	num	8	16	6	 	 	 	 	0	num	no	0	.	yes
+WORK	HAVE	DATA	a4	num	8	24	7	 	 	 	 	0	num	no	0	.	yes
+WORK	HAVE	DATA	a5	num	8	32	8	 	 	 	 	0	num	no	0	.	yes
+WORK	HAVE	DATA	a6	num	8	40	9	 	 	 	 	0	num	no	0	.	yes
+WORK	HAVE	DATA	a7	num	8	48	10	 	 	 	 	0	num	no	0	.	yes
+WORK	HAVE	DATA	a8	num	8	56	11	 	 	 	 	0	num	no	0	.	yes
+WORK	IN	DATA	a	num	8	0	1	 	 	 	 	0	num	no	0	.	yes
+WORK	IN	DATA	b	char	1	16	2	 	 	 	 	0	char	no	0	.	yes
+WORK	IN	DATA	c	num	8	8	3	 	 	 	 	0	num	no	0	.	yes
+WORK	IN	DATA	d	char	1	17	4	 	 	 	 	0	char	no	0	.	yes
+WORK	NAME	DATA	Name	char	8	0	1	 	 	 	 	0	char	no	0	.	yes
+WORK	NAME	DATA	Sex	char	1	8	2	 	 	 	 	0	char	no	0	.	yes
+WORK	T1	DATA	mem_b	num	8	0	1	 	 	 	 	0	num	no	0	.	yes
+WORK	WANT	DATA	OBS	num	8	0	1	 	 	 	 	0	num	no	0	.	yes
+WORK	WANT	DATA	CODE	char	1	32	2	 	 	 	 	0	char	no	0	.	yes
+WORK	WANT	DATA	DATEF	num	8	8	3	 	 	 	 	0	num	no	0	.	yes
+WORK	WANT	DATA	PREV_INTEREST	num	8	16	4	 	 	 	 	0	num	no	0	.	yes
+WORK	WANT	DATA	COUPON	num	8	24	5	 	 	 	 	0	num	no	0	.	yes
