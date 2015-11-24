@@ -1,0 +1,39 @@
+data have;
+input id $2. call_dt:mmddyy10. MYTIME:2. ampm:$2.;
+cards;
+12 10/06/2015 10 am
+12 10/06/2015 12 pm
+12 10/06/2015 2 pm
+12 10/06/2015 5 pm
+;
+RUN;
+DATA HAVE(drop=mytime init_mytime stime);
+SET HAVE;
+RETAIN ID CALL_DT;
+INIT_MYTIME=LAG(MYTIME);
+IF _N_=2 THEN out_ampm = lag(ampm);
+IF _n_ = 1 THEN delete;
+ELSE
+  DO I=INIT_MYTIME TO MYTIME by 1;
+     OUTPUT;    
+  END;
+  if i = 13 
+     then 
+        do;
+           i=1;
+           init_mytime=1;
+           output;
+        end;
+
+PROC PRINT;FORMAT CALL_DT MMDDYY10. TIME TIMEAMPM5.;
+================================
+
+Obs	id	call_dt	ampm	out_ampm	I
+1	12	10/06/2015	pm	 	10
+2	12	10/06/2015	pm	 	11
+3	12	10/06/2015	pm	 	12
+4	12	10/06/2015	pm	 	1
+5	12	10/06/2015	pm	 	2
+6	12	10/06/2015	pm	 	3
+7	12	10/06/2015	pm	 	4
+8	12	10/06/2015	pm	 	5
