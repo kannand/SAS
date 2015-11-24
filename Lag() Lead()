@@ -1,0 +1,66 @@
+DATA in;
+ INPUT X $1. @@; if X ne ' ';
+DATALINES;
+12345
+;
+run;
+DATA NEWX;
+	 SET IN END=LAST; 
+	 LAGX=LAG(X); 
+	 OUTPUT;
+	 IF LAST 
+	 THEN 
+	 	DO; 
+	 		LAGX=X;
+	 		X=.; 
+	 		OUTPUT;
+	 	END;
+RUN;
+DATA NEWX ;
+	SET NEWX;
+	IF _N_ = 1 
+	THEN 
+		DELETE; 
+	LAGX2=LAG(LAGX);
+RUN;
+PROC DATASETS NOPRINT;
+     MODIFY NEWX;
+     RENAME X=LEADX
+     		LAGX=X
+     		LAGX2=LAGX;
+RUN;
+PROC PRINT; 
+RUN;
+/*
+PROC PRINT DATA=IN;TITLE '==IN';
+data FIRSTREC(KEEP=X) LASTREC; 
+set in END=LAST ;
+IF _N_ = 1 THEN OUTPUT FIRSTREC;
+IF LAST THEN DO; LAGX=LAG1(X);OUTPUT LASTREC;END;
+run;
+data leadx(rename=x=LEADX); 
+set in;
+if _n_>1;
+run;
+PROC PRINT DATA=LASTREC;TITLE '==LASTREC'; 
+PROC PRINT DATA=LEADX;TITLE '==LEADX'; 
+data out;
+ set in;
+ set leadx LASTREC;
+RUN;
+DATA FINAL; SET IN; SET OUT(DROP=X);
+DATA FINAL; SET FINAL;
+ iF _N_ > 1 THEN LAGX=lag(x);
+run;
+PROC PRINT DATA=FINAL NOOBS; 
+ var lagx X LEADX;
+ TITLE 'SIMULATION OF A MISSING LEAD FUNCTION';
+RUN; 
+============================================
+
+Obs	LEADX	X	LAGX
+1	2	1	 
+2	3	2	1
+3	4	3	2
+4	5	4	3
+5	.	5	4
