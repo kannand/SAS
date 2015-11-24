@@ -1,0 +1,60 @@
+%macro xlfile(file);
+proc import out= &file
+    datafile = '/folders/myfolders/data/SASTABSv5.xls'
+    dbms = xls;
+    sheet = "&file";
+    getnames = yes;
+run;
+%mend xlfile;
+%xlfile(TAB1);
+%xlfile(TAB2);
+%xlfile(TAB3);
+
+proc contents data=work._all_;
+
+=========================================================
+ 
+ 1          OPTIONS NONOTES NOSTIMER NOSOURCE NOSYNTAXCHECK;
+ 55         
+ 56         %macro xlfile(file);
+ 57         proc import out= &file
+ 58             datafile = '/folders/myfolders/data/SASTABSv5.xls'
+ 59             dbms = xls;
+ 60             sheet = "&file";
+ 61             getnames = yes;
+ 62         run;
+ 63         %mend xlfile;
+ 64         %xlfile(TAB1);
+ 
+ NOTE: The import data set has 2 observations and 2 variables.
+ NOTE: WORK.TAB1 data set was successfully created.
+ NOTE: PROCEDURE IMPORT used (Total process time):
+       real time           0.01 seconds
+       cpu time            0.01 seconds
+       
+ 
+ 65         %xlfile(TAB2);
+ 
+ NOTE: The import data set has 2 observations and 2 variables.
+ NOTE: WORK.TAB2 data set was successfully created.
+ NOTE: PROCEDURE IMPORT used (Total process time):
+       real time           0.00 seconds
+       cpu time            0.01 seconds
+       
+ 
+ 66         %xlfile(TAB3);
+ 
+ NOTE: The import data set has 2 observations and 2 variables.
+ NOTE: WORK.TAB3 data set was successfully created.
+ NOTE: PROCEDURE IMPORT used (Total process time):
+       real time           0.00 seconds
+       cpu time            0.01 seconds
+       
+ 
+ 67         
+ 68         proc contents data=work._all_;
+ 69         
+ 70         OPTIONS NONOTES NOSTIMER NOSOURCE NOSYNTAXCHECK;
+ 82         
+ ===============================================
+ 
