@@ -1,0 +1,29 @@
+DATA B  ;
+ INPUT v1:$2. v2:$2. V3:$2. ;
+DATALINES;
+. 01 AA      
+. 02 BB  
+B1 03 CC
+;
+RUN;
+DATA A ;
+ INPUT v1:$2. v2:$2. V3:$2.;
+DATALINES; 
+B1 03 14
+B1 03 15
+B1 01 11                            
+OO 02 12                        
+QU 03 13
+;
+RUN;
+PROC SQL;
+   SELECT A.V1,A.V2,A.V3,B.V1,B.V2,B.V3
+     FROM B LEFT JOIN A ON (B.V1=A.V1) AND (B.V2=A.V2);
+QUIT;
+==================================
+
+v1	v2	V3	v1	v2	V3
+ 	 	 	 	01	AA
+ 	 	 	 	02	BB
+B1	03	15	B1	03	CC
+B1	03	14	B1	03	CC
