@@ -1,0 +1,35 @@
+DATA chocolate;    
+INFILE datalines;   
+INPUT AgeGroup $ FavoriteFlavor $ @@; 
+datalines;
+A VANILLA
+A VANILLA
+C VANILLA
+C CHOCOLATE
+C CHOCOLATE
+C CHOCOLATE
+A CHOCOLATE
+A STRAWBERRY
+A FRUIT
+A FRUIT
+A FRUIT
+A FRUIT
+C FRUIT
+A JELLY
+A JELLY
+C JELLY
+;
+RUN;
+
+PROC FORMAT;   
+VALUE $AgeGp 'A' = 'Adult' 'C' = 'Child'; 
+RUN; 
+
+* Bar chart for favorite flavor; 
+PROC SGPLOT DATA = chocolate;  
+VBAR FavoriteFlavor / GROUP = AgeGroup GROUPDISPLAY = CLUSTER;   
+FORMAT AgeGroup $AgeGp.;    
+LABEL FavoriteFlavor = 'Flavor of Chocolate';  
+TITLE 'Favorite Chocolate Flavors by Age';
+RUN; 
+=============================
