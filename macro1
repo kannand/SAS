@@ -1,0 +1,76 @@
+filename file1 '/folders/myfolders/testfile.txt';
+data in1;input v1:1.;
+datalines;
+1
+2
+3
+;
+RUN;
+data in2;input v1:$1.;
+datalines;
+1
+4
+5
+6
+;
+RUN;
+%macro read_as_char(indsn,workfilename,outdsname);
+data _null_;
+     file &workfilename;
+     set &indsn;
+     put v1;
+run;
+data &outdsname;
+     infile &workfilename;
+     input v1:$1.;
+RUN;
+%mend read_as_char;
+%read_as_char(in1,file1,ds1);
+%read_as_char(in2,file1,ds2);
+
+data final;
+     set ds1 
+         ds2;
+run;
+proc print data=final;
+proc contents data=final;
+run;  
+===========================================
+
+Obs	v1
+1	1
+2	2
+3	3
+4	1
+5	4
+6	5
+7	6
+The CONTENTS Procedure
+Data Set Name	WORK.FINAL	Observations	7
+Member Type	DATA	Variables	1
+Engine	V9	Indexes	0
+Created	11/23/2015 22:41:13	Observation Length	1
+Last Modified	11/23/2015 22:41:13	Deleted Observations	0
+Protection	 	Compressed	NO
+Data Set Type	 	Sorted	NO
+Label	 	 	 
+Data Representation	SOLARIS_X86_64, LINUX_X86_64, ALPHA_TRU64, LINUX_IA64	 	 
+Encoding	utf-8 Unicode (UTF-8)	 	 
+Engine/Host Dependent Information
+Data Set Page Size	65536
+Number of Data Set Pages	1
+First Data Page	1
+Max Obs per Page	58218
+Obs in First Data Page	7
+Number of Data Set Repairs	0
+Filename	/tmp/SAS_work375200000742_localhost.localdomain/SAS_work093B00000742_localhost.localdomain/final.sas7bdat
+Release Created	9.0401M3
+Host Created	Linux
+Inode Number	276002
+Access Permission	rw-rw-r--
+Owner Name	sasdemo
+File Size	128KB
+File Size (bytes)	131072
+Alphabetic List of Variables and Attributes
+#	Variable	Type	Len
+1	v1	Char	1
