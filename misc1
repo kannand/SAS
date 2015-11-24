@@ -1,0 +1,246 @@
+options nocenter mlogic mprint symbolgen obs=max errors=1;
+
+%macro import1(inname,outname);
+proc import datafile=&inname
+      out=&outname
+      DBMS=xlsx
+      ;
+run;
+proc print data=&outname;
+%mend import1;
+%import1("/folders/myfolders/data/tourdates",work.in2);
+
+
+/*
+proc import datafile="/folders/myfolders/data/tourdates"
+      out=work.in1      
+      DBMS=xlsx
+      ;
+run;
+proc print data=work.in1;
+/*
+
+/*
+data k;input x  @@;datalines;
+1 2 3
+;
+run;
+data k;set k; 
+if _n_>1 then output;
+retain leadx;leadx=x; 
+proc print label;
+
+/*
+DATA in;
+ 	 INPUT X $1. @@; if X ne ' ';
+DATALINES;
+12345
+;
+run;
+
+data leadx(rename=x=LEADX); 
+	 set in;
+	     if _n_>1;
+run;
+
+data out;
+	 set in;
+	 set leadx;
+	 LAGX=lag1(x);
+run;
+
+PROC PRINT DATA=out NOOBS; 
+	 var lagx X LEADX;
+	 TITLE 'SIMULATION OF A MISSING LEAD FUNCTION';
+RUN; 
+
+/*
+/*
+data k;
+   do i=1 to 3;
+   input x 1. @;
+   output;
+   end;
+   drop i;
+datalines;
+123
+;
+run;
+
+/*
+data k;
+input x 1. @@;if x ne '.';
+datalines;
+12345
+;
+if _n_
+run;
+proc print;
+
+/*
+options parmcards=tempdata;
+filename tempdata temp;
+parmcards;
+123
+;
+data k;
+  infile tempdata;
+  input x 1. @@;
+run;
+proc print;
+
+/*
+
+
+
+data GROUPA;
+     input IDKEY:4. VAR:$1.;
+     cards;
+     2014 A
+     2014 B
+     2015 C
+     2016 D
+     2013 E
+;
+RUN;
+proc sql;
+     select libname, memname, memtype, nobs
+      from dictionary.tables
+      where libname='WORK.GROUPA';
+     run;
+/*
+proc sql;
+select * from dictionary.columns; 
+quit;
+/*
+data GROUPA;
+     input IDKEY:4. VAR:$1.;
+     cards;
+     2014 A
+     2014 B
+     2015 C
+     2016 D
+     2013 E
+;
+RUN;
+data ID2B;
+     input IDKEY:4. IDCERTKEY:2.;
+     cards;
+     2014 01 
+     2014 02 
+     2015 03 
+     2016 04 
+;
+RUN;
+PROC SQL;
+ SELECT A.*,B.IDCERTKEY FROM GROUPA A left join 
+ 				 ID2B   B 			on 
+  		A.IDKEY = B.IDKEY
+    AND B.IDCERTKEY = (SELECT MAX(DISTINCT IDCERTKEY) 
+ 			  			 FROM ID2B C
+ 			  			WHERE B.IDKEY = C.IDKEY) ;
+QUIT;
+/*
+
+
+/*
+data in;
+     input y:4. m:2. claims 3. ptf 8.;
+     cards;
+     2014 01 575 250555
+     2014 02 555 251555
+     2014 03 501 252256
+     2014 04 556 252222
+     2014 05 587 253000
+     2014 06 595 253599
+     2014 07 459 254568
+     2014 08 531 254998
+    2014 09 598 255998
+    2014 10 358 256687
+     2014 11 589 257169
+     2014 12 456 258859
+     2015 01 598 259589
+     2015 02 433 264210
+     ;
+run;
+data in; set in; c1=lag1(claims);c2=lag2(claims);c3=lag3(claims);
+                 p1=lag1(ptf); p2=lag2(ptf); p3=lag3(ptf);
+proc sql;
+select y,m,claims,ptf,(( claims+c1+c2+c3)/(ptf+p1+p2+p3)) as myratio
+  from in;
+quit;
+
+proc print;
+
+/*
+data a;
+input date sales;
+datalines;
+4 4000
+;
+
+data b;
+input date value_purchased_items;
+datalines;
+1 100
+2 200
+3 300
+;
+
+proc sql;
+select a.date, sum(b.value_purchased_items,0) as sum_value_purchased_items, a.sales
+from  a left join b on
+a.date=b.date;
+quit;
+
+
+
+
+
+/*
+data have;
+     input v:$5.;
+datalines;
+01-02
+01-03
+02-03
+03-04
+05-04
+06-07
+07-01
+;
+run;
+proc sort data=have;by v;
+data a(drop=v2) b(drop=v1);
+     set have;
+     v1=substr(v,1,2);
+     v2=substr(v,4,2);
+     if v1 <= v2 then nv=v;else nv=trim(v2)||'-'||trim(v1);
+run;
+proc datasets noprint;
+     modify b;
+     rename v2=v1;
+run;
+proc sort data=a;by nv;
+data a b;
+     set a; uid=substr(nv,1,2); v2=substr(nv,4,2);
+run;
+proc sort data=b;by v2;
+proc print data=a;title '==a==';
+proc print data=b;title '==b==';
+
+/*
+proc import datafile="/folders/myfolders/data/tourdates"
+      out=work.in1      
+      DBMS=xlsx
+      ;
+run;
+proc print data=out;
+/*
+
+data have;
+     infile '/folders/myfolders/data/tourdates.xlsx' dsd;
+	input country:$13. dep_date: date9. nights: 2.;
+run;
+
+proc print;
