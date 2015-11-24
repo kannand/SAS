@@ -1,0 +1,45 @@
+/*  http://www2.sas.com/proceedings/forum2008/029-2008.pdf  */
+
+data name;
+	set sashelp.class (keep=name sex  obs=5);
+run;
+data age ;
+	set sashelp.class (keep=name age weight   obs=5 firstobs=3);
+run;
+proc print data=name;title '==name==';
+proc print data=age ;title '==age==';
+
+data hashmerge;
+	if 0 then set name age;
+	if _n_ = 1 
+	then 
+		do;
+			declare Hash Matchclass(dataset:'age');
+			Matchclass.definekey('name');
+			Matchclass.definedata('age','weight');
+			Matchclass.definedone();
+		end;
+	set name;
+	if Matchclass.find(key:name) = 0 
+	then
+		output;
+run;
+proc print;
+=============================
+==name==
+Obs	Name	Sex
+1	Alfred	M
+2	Alice	F
+3	Barbara	F
+4	Carol	F
+5	Henry	M
+==age==
+Obs	Name	Age	Weight
+1	Barbara	13	98.0
+2	Carol	14	102.5
+3	Henry	14	102.5
+==age==
+Obs	Name	Sex	Age	Weight
+1	Barbara	F	13	98.0
+2	Carol	F	14	102.5
+3	Henry	M	14	102.5
