@@ -1,0 +1,252 @@
+options nocenter mlogic mprint symbolgen obs=max errors=1;
+
+data in1;input v1:1.;
+datalines;
+1
+2
+3
+;
+RUN;
+data in2;input v1:$1.;
+datalines;
+1
+2
+3
+;
+RUN;
+proc print data=in1;
+proc print data=in2;
+
+/*
+data in;input v1:$1.;
+datalines;
+A
+B
+C
+D
+E
+;
+RUN;
+/* THE NEXT STEP CREATES AN EMPTY SAS DATASET CALLED IN2 */
+DATA IN2;
+     SET IN(OBS=0);
+RUN;
+
+/*THE NEXT PROC SQL STEP COUNTS THE NUMBER OF RECORDS IN THE FILE IN2*/
+PROC SQL NOPRINT;
+     SELECT COUNT(*) INTO :TOT FROM IN2;
+QUIT;
+/* THE NEXT MACRO PRINTS THE ACTUAL DATA FROM SAS DATASET "IN" */
+%MACRO P;
+     PROC PRINT DATA=IN;
+     TITLE '==TEST REPORT==';
+%MEND P;
+/*THE NEXT STEP CREATES AND PRINTS THE MESSAGE THAT THERE IS NOT DATA TO PRINT*/
+%MACRO NODATA;
+       DATA NODATA;
+            MSG='==THERE IS NO DATA TO PRINT==';
+            LABEL MSG=' ';
+       RUN;
+       PROC PRINT DATA=NODATA NOOBS LABEL; 
+       RUN;
+%MEND NODATA;
+/*THE NEXT MACRO CALLS THE RIGHT MACRO DEPENDING ON THE DATA IN THE DATASET */
+%MACRO WHAT_TO_PRINT;
+     %IF &TOT > 0 %THEN %P; %ELSE %NODATA;
+RUN;
+%MEND WHAT_TO_PRINT;
+/*THE NEXT STEP INVOKES THE MACRO FOR EXECUTION */
+%WHAT_TO_PRINT;
+
+
+
+
+/*
+data have;infile datalines dlm='09'x;
+input 
+F_Date:yymmdd8. 
+			A_Date:yymmdd8. 
+						F_Value 
+							A_Value Analyst_Code;
+datalines;
+20010305	20021002	3	3.15	5
+20011228	20021002	3.1	3.15	9
+20020223	20021002	3.2	3.15	7
+20020518	20021002	3.3	3.15	5
+20020826	20021002	3.4	3.15	7
+20021001	20021002	3.5	3.15	9
+;run;
+PROC PRINT DATA=HAVE;
+FORMAT F_DATE A_DATE MMDDYY8.;
+proc sql;
+select distinct analyst_code , min(f_date) as min_f_date format=mmddyy10. from have group by analyst_code;
+SELECT DISTINCT ANALYST_CODE,F_VALUE ,a_value, MIN(F_DATE) AS MIN_F_DATE FORMAT=MMDDYY10. FROM HAVE GROUP BY ANALYST_CODE,F_VALUE;
+
+select b.analyst_code, b.min_f_date, b.f_value, b.a_value,b.min_f_date  from
+(select distinct analyst_code , min(f_date) as min_f_date format=mmddyy10. from have group by analyst_code)					a,
+(SELECT DISTINCT ANALYST_CODE,a_value,F_VALUE ,a_value, MIN(F_DATE) AS MIN_F_DATE FORMAT=MMDDYY10. FROM HAVE GROUP BY ANALYST_CODE,a_value,f_VALUE)	b
+where b.analyst_code = a.analyst_code
+  and b.min_f_date = a.min_f_date  ;
+
+select F_DATE FORMAT =YYMMDD10., A_DATE FORMAT =YYMMDD10., F_VALUE, A_VALUE, ANALYST_CODE, THE_DATE, MIN_DATE
+    	 	   				   from (select *, (a_date-f_date) as the_date  from have) 		A,
+    	 							(select MIN (a_date-f_date) as MIN_date  from have )	B
+    	 					  WHERE A.THE_DATE = MIN_DATE;
+
+
+SELECT Y.MIN_F_DATE AS NEW_F_DATE FORMAT=MMDDYY10., Y.F_VALUE AS NEW_F_VALUE,Z.F_DATE FORMAT=MMDDYY10.,Z.A_DATE FORMAT=YYMMDD10., Z.F_VALUE, Z.A_VALUE,
+	   Z.ANALYST_CODE
+  FROM
+(select b.analyst_code, b.min_f_date, b.f_value, b.a_value,b.min_f_date  from
+(select distinct analyst_code , min(f_date) as min_f_date format=mmddyy10. from have group by analyst_code)					a,
+(SELECT DISTINCT ANALYST_CODE,a_value,F_VALUE ,a_value, MIN(F_DATE) AS MIN_F_DATE FORMAT=MMDDYY10. FROM HAVE GROUP BY ANALYST_CODE,a_value,f_VALUE)	b
+where b.analyst_code = a.analyst_code
+  and b.min_f_date = a.min_f_date ) Y,
+(select F_DATE FORMAT =YYMMDD10., A_DATE FORMAT =YYMMDD10., F_VALUE, A_VALUE, ANALYST_CODE, THE_DATE, MIN_DATE
+    	 	   				   from (select *, (a_date-f_date) as the_date  from have) 		A,
+    	 							(select MIN (a_date-f_date) as MIN_date  from have )	B
+    	 					  WHERE A.THE_DATE = MIN_DATE) Z
+WHERE Y.ANALYST_CODE = Z.ANALYST_CODE;
+/*
+select distinct analyst_code , min(f_date) as min_f_date format=mmddyy10. from have group by analyst_code;
+SELECT DISTINCT ANALYST_CODE,F_VALUE , MIN(F_DATE) AS MIN_F_DATE FORMAT=MMDDYY10. FROM HAVE GROUP BY ANALYST_CODE,F_VALUE;
+*/
+/*
+select F_DATE FORMAT =YYMMDD10., A_DATE FORMAT =YYMMDD10., F_VALUE, A_VALUE, ANALYST_CODE, THE_DATE, MIN_DATE
+    	 	   				   from (select *, (a_date-f_date) as the_date  from have) 		A,
+    	 							(select MIN (a_date-f_date) as MIN_date  from have )	B
+    	 					  WHERE A.THE_DATE = MIN_DATE;
+/*
+SELECT D.F_dATE,D.A_DATE,D.F_VALUE AS D_F_VALUE, C.F_VALUE AS C_F_VALUE,D.A_VALUE,D.ANALYST_CODE, MIN_F_DATE AS V1, D.A_VALUE-D.F_VALUE AS V2  
+  FROM
+(SELECT DISTINCT ANALYST_CODE,F_VALUE , MIN(F_DATE) AS MIN_F_DATE FORMAT=MMDDYY10. FROM HAVE GROUP BY ANALYST_CODE,F_VALUE)		C,
+
+(select F_DATE FORMAT =YYMMDD10., A_DATE FORMAT =YYMMDD10., F_VALUE, A_VALUE, ANALYST_CODE, THE_DATE, MIN_DATE
+    	 	   				   from (select *, (a_date-f_date) as the_date  from have) 		A,
+    	 							(select MIN (a_date-f_date) as MIN_date  from have )	B
+    	 					  WHERE A.THE_DATE = MIN_DATE)																		D
+  WHERE C.ANALYST_CODE = D.ANALYST_CODE
+    AND D.F_DATE      =  MIN_F_DATE;
+/*
+
+	SELECT ANALYST_CODE, MIN_F_DATE FORMAT=YYMMDD8.  FROM 
+					(SELECT DISTINCT ANALYST_CODE AS DISTINCT_ANALYST_CODE , MIN(F_DATE) AS MIN_F_DATE 
+	  				   FROM HAVE )												C,
+					(select DISTINCT f_date FORMAT =YYMMDD8.,a_date FORMAT =YYMMDD8.,f_value,a_value,analyst_code,
+								     the_date FORMAT =YYMMDD8., 
+								     MIN_DATE FORMAT =YYMMDD8.
+       				   from
+							(select MIN(DISTINCT the_date) AS MIN_DATE  
+    	 	   				   from (select *, (a_date-f_date) as the_date  from have)) 	A,
+    	 					(select *, (a_date-f_date) as the_date  from have 		 )	B
+   					  WHERE MIN_DATE = THE_DATE)													D
+   			 WHERE C.DISTINCT_ANALYST_CODE = D.ANALYST_CODE
+    ;
+QUIT;
+/*
+      select f_date,a_date,f_value,a_value,analyst_code,the_date 
+     
+     from (select *, (a_date-f_date) as the_date from have) a,
+     
+          (select f_date,a_date,f_value,a_value,analyst_code,min(the_date) 
+             from (select f_date,a_date,f_value,a_value,analyst_code,the_date 
+    	 			 from (select *, (a_date-f_date) as the_date from have) A) B
+    	 			WHERE A.F_DATE = B.F_DATE
+    	 			  AND A.A_DATE = B.A_DATE
+    	 			  AND A.A_VALUE = B.A_VALUE
+    	 			  AND A.ANALYST_CODE = B.ANALYST_CODE)
+     
+quit; 
+/*
+proc sql;
+      select f_date,a_date,f_value,a_value,analyst_code,the_date 
+     from (select *, (a_date-f_date) as the_date from have);
+quit; 
+
+proc print;
+
+
+/*
+
+data have;
+input subjid value;
+cards;
+101 1
+101 .
+101 1 
+101 2
+101 1
+102 1
+102 2
+102 .
+102 1
+103 2
+103 1
+103 .
+103 1
+;
+proc print data=have;
+     title '==BEFORE==';
+run;
+data have;
+     set have;
+     if value = 2 and lag1(value) = 1 then output;
+run;
+proc print data=have;
+     title '==AFTER==';
+run;
+
+
+
+/*
+
+%macro m1;
+input x y;
+%mend m1;
+data in1;
+	 %m1;
+	 a=lag1(x);
+	 b=lag2(x);
+	 
+  	 datalines;
+1 10
+2 30  
+3 30
+4 40
+5 50
+;	 
+run;
+data in2;
+ 	 %m1;
+	 a=lag1(x);
+	 b=lag2(x);	 
+  	 datalines;
+1 15
+2 25
+3 35
+4 45
+5 55
+;
+run;
+proc sort data=in1;
+  by x;
+run;
+proc sort data=in2;
+  by x;
+run;
+
+data all;
+	merge in1(in=one drop=a b rename=(y=y_one))
+	      in2(in=two drop=a b rename=(y=y_two));
+	   by x;
+	if one and two;
+run;
+proc print data=in1;
+	title '==first print';
+run;
+proc print data=in2;
+	title '==second print';
+run;
+proc print data=all;
+title '==all';
+run;
