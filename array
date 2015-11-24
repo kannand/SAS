@@ -1,0 +1,22 @@
+data have;
+input name_ID:$4. var1:$1. var2:$2.;
+datalines;
+1111 2
+111 3 6
+111 6 9
+555 2 2
+555 4 5
+555 5 4
+563 2 2
+563 1 1
+;
+run;
+data have;
+	 set have;
+	 array a(8);
+	 a(_n_) = name_id;
+	 put 'array value=' a(_n_);
+run;
+proc print;
+
+	 
