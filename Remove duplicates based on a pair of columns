@@ -1,0 +1,111 @@
+
+New User
+ModernSolomon
+Posts: 1
+Remove Duplicates Based on a Pair of Columns
+Options
+3 hours ago
+
+Hello,
+ 
+I have run into a task in SAS that, though appearing easily accomplished, has actually proved to be quite tricky.
+ 
+I have a dataset that looks like this:
+ 
+ID     A     B     C
+1      a      e     #
+2      c      f      #
+3      e      a     #
+4      f       c     #  ,
+ 
+where A and B are identifiers and C is the common field between the two. In this particular instance, rows 1 and 3 are duplicates while rows 2 and 4 are duplicates.  I need to find a way to remove the instances of duplication.  There may be an easy answer to the problem, but I may have been looking at it too long to notice it Smiley Very Happy.
+ 
+Thanks in advance,
+ 
+MS
+ 
+Message 1 of 3 (33 Views)
+Add Tag...
+Quick Reply
+Reply
+0  Likes
+
+All Replies
+ Frequent Contributor kannand
+Frequent Contributor
+kannand
+Posts: 128
+Re: Remove Duplicates Based on a Pair of Columns
+Options
+2 hours ago
+
+As with many problems, there are many ways to solve this, using a hash table, proc sql, or a data step.   Here is a way using simple data steps...
+data in;
+input ID VAR1:$1. VAR2:$1. VAR3:$1.;
+DATALINES;
+
+1      a      e     #
+2      c      f      #
+3      e      a     #
+4      f       c     # 
+;
+RUN;
+PROC SORT DATA=IN;
+  BY VAR1 VAR2;
+RUN;
+PROC SORT DATA=IN OUT =REV;
+  BY VAR2 VAR1;
+RUN;
+
+DATA DUPES;
+     MERGE IN (IN=A RENAME=(VAR1=V1 VAR2=V2 ID=ID1 VAR3=V3))
+           REV(IN=B RENAME=(VAR1=V2 VAR2=V1 ID=ID2 VAR3=V3));
+        BY V1 V2;
+     IF A & B;
+     IF ID1 NE . AND ID2 NE . 
+     THEN KEEP_REC=MIN(ID1,ID2);
+RUN;
+PROC SORT DATA=DUPES OUT=FINAL(KEEP=ID V1 V2 V3) NODUPKEYS;
+  BY KEEP_REC;
+RUN;
+PROC PRINT;
+Here is the output it generates...
+Obs	V1	V2	V3
+1	a	e	#
+2	c	f	#
+Hope this helps.... Good Luck...!!!
+Kannan Deivasigamani
+Message 2 of 3 (17 Views)
+Add Tag...
+Quick Reply
+Reply
+0  Likes
+ Trusted Advisor Astounding
+Trusted Advisor
+Astounding
+Posts: 2,272
+Re: Remove Duplicates Based on a Pair of Columns
+Options
+2 hours ago
+
+One way would be to create a pair of new variables:
+ 
+data want;
+set have;
+if a < b then do;
+   minval=a;
+   maxval=b;
+end;
+else do;
+   minval=b;
+   maxval=a;
+end;
+run;
+ 
+proc sort data=want nodupkey;
+   by minval maxval;
+run;
+ 
+You could always drop minval and maxval later.
+ 
+Good luck.
