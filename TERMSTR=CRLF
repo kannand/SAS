@@ -1,0 +1,3 @@
+data in;
+	infile 	in2 termstr=crlf;
+	input 	@1 	...
