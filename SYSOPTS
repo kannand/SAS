@@ -1,0 +1,4 @@
+STEP1  COPY  FROM (PNODE DSN=&INDSN  DISP=SHR                   -  
+ SYSOPTS=":DATATYPE=BINARY:STRIP.BLANKS=NO:XLATE=NO:")          -  
+               TO (SNODE DSN=&OUTDSN DISP=RPL                   -  
+ SYSOPTS=":DATATYPE=TEXT:STRIP.BLANKS=NO:XLATE=NO:")               
