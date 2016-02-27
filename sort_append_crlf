@@ -1,0 +1,14 @@
+//COPY01   EXEC PGM=SORT,REGION=1M                                    
+//SORTIN   DD DISP=SHR,DSN=in
+//SORTOUT  DD DSN=out(+1),                                    
+//         DISP=(NEW,CATLG,DELETE),                                   
+//         DCB=(BLKSIZE=7500,LRECL=75,RECFM=FB),                      
+//         SPACE=(CYL,(50,300),RLSE)                                  
+//SYSOUT   DD SYSOUT=*                                                
+//SYSPRINT DD SYSOUT=*                                                
+//SYSUDUMP DD SYSOUT=*                                                
+//SYSABEND DD SYSOUT=*                                                
+//SORTDIAG DD DUMMY                                                   
+//SYSIN    DD *                                                       
+     SORT FIELDS=COPY,SKIPREC=143,STOPAFT=5                           
+     OUTREC OVERLAY=(75:X'0D')                                        
