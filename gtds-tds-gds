@@ -1,0 +1,129 @@
+/*%macro readfiles(f1=,f2=,n=,m=); 
+			%sysexec %str(cd &f1; ls &f2* > &WORKFLDR/meta.txt);
+			filename f "&WORKFLDR/meta.txt";
+			data in;
+					 infile f length=recl;  
+					 input @1 inrec $varying100. recl;
+					 newin = trim(inrec);
+					 dat_pos = index(inrec,".dat");
+					 len = length(newin);
+					 nc = substr(newin,dat_pos-10,6);
+					 n  = input(nc,6.);
+					 mc = substr(newin,dat_pos-3,3);
+					 glimit = input (mc,3.);
+					 put nc n mc glimit;
+			run;
+			proc print data=in;
+			run;
+			proc sql;
+			     select  count(*) 						,
+				    		   min(n)        				,
+				    			 max(n)        				,
+									 glimit  							
+			       into :calc_tot      				,
+				          :calc_min      				,
+				          :calc_max      				,
+									:calc_glimit					
+			       from in;
+			quit;
+
+			%let abs_n = %sysfunc(abs(&n));
+			%put ' &abs_n &calc_tot &calc_min &calc_max &calc_glimit:' &abs_n &calc_tot &calc_min &calc_max &calc_glimit;
+
+			%if &calc_tot ne 0
+			%then 
+				%do;
+						%put '==if part' &calc_tot ; 	
+						proc sql;						 
+								 select max(n) &n format=z6.
+								   into :newmaxn
+					   			 from in;
+						quit;
+						%put '&maxn=' &newmaxn;				
+						proc sql;
+						     select  min(n)     	format=z6.,
+												 glimit     	format=z3.
+						       into :dropgen,
+												:gen
+						       from in;
+						quit;
+						%put '&newmaxn &dropgen &gen=' &newmaxn &dropgen &gen;
+						filename dropfile "&f1/&f2&dropgen.m&gen..dat";	
+						data _null_;
+								 %let calc_newhi = &calc_max + &n;
+								 %put '==&calc_max &n &calc_newhi:' &calc_max &n &calc_newhi;
+								 /*delete meta.txt file */
+						     rc=fdelete("f"); 	
+								 /*	if a roll-off is necessary then do it */
+								 %put '&calc_glimit &calc_tot &m=' &calc_max &n &calc_newhi &m;
+								 %put 'sysevalf:' %sysevalf(&calc_glimit+1); 
+						     if (%sysevalf(&calc_glimit+1) le &calc_tot) and (&n gt 0)
+						     then
+											/*delete dropfile, the oldest TDS file */ 
+											rc=fdelete("dropfile");
+						run;
+						data _null_;
+								 %global fn;
+								 %let fn="&f1/&f2&newmaxn.m&gen..dat";
+						run;
+						%put '==&fn:' &fn;
+					%end;
+				%else
+					%do;
+								%put '==else part';
+								data in2; 
+										 m=&m;
+										 m2=put(m,z3.);
+										 
+										 infile f length=recl;  
+										 input @1 inrec $varying100. recl;
+										 newin = trim(inrec);
+										 dat_pos = index(inrec,".dat");
+										 len = length(newin);
+										 nc = substr(newin,dat_pos-10,6);
+										 n  = input(nc,6.);
+								run;
+								proc print data=in2;title '==else part in2';run;
+								data _null_;
+								     mchar  = &m;			
+										 glimitc=put(mchar,z3.);
+										 put '==glimit mchar:' glimitc mchar;
+										 call symput('glimit',glimitc);
+								run;				
+								data _null_;
+										 %global fn;
+										 %put '==&m:' &m;
+										 %if &n gt 0 %then
+										 %let fn="&f1/&f2.000001m&glimit..dat";
+								run;	
+					%end;	
+
+					%if (&calc_tot lt &abs_n) and &n lt 1
+		 		  %then 
+							%let fn='FILE NOT FOUND ERROR!';
+%mend readfiles;
+%let WORKFLDR = /cml_data/cim/dev/working/eqeums01 ;
+
+
+/* %include '/cml_jobs/cim/dev/users/k85671/lib/tds_v2.sas';  */
+/*
+%include '/cml_jobs/cim/dev/users/k85671/demo2/tds.sas';
+
+%readfile(f1=/cml_data/cim/dev/data/eqeums01,   f2=athtoday_,    n=+1,   m=2);filename f1 &fn;
+%readfile(f1=/cml_data/cim/dev/data/eqeums01,   f2=athtoday_,    n=-1,   m=2);filename f2 &fn;
+%readfile(f1=/cml_data/cim/dev/data/eqeums01,   f2=athtoday_,    n=+0,   m=2);filename f3 &fn;
+
+data _null_;
+		file f1;
+		put 'the TDS# is:' &fn;
+run;
+
+data _null_;
+		file f2;
+		put 'the TDS# is:' &fn;
+run;
+
+data _null_;
+		file f3;
+		put 'the TDS# is:' &fn;
+run;Enter file contents here
