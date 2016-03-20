@@ -1,0 +1,32 @@
+filename xref        '/cml_data/cim/dev/users/k85671/data/';
+libname  myfmt			 '/cml_jobs/cim/dev/users/k85671/myfmt';
+proc import datafile="/cml_data/cim/dev/users/k85671/data/filename_xref.csv"
+     out=xref
+     dbms=csv
+     replace;
+     getnames=no;
+run;
+data xref(keep=start label fmtname);
+  set xref;
+	if _n_=1 then delete;
+  x=index(var1,'(');
+	if x > 0
+	then start=substr(var1,1,x-1);
+	else start=var1;
+	x=index(var2,'/');
+	if x > 0
+	then label=substr(var2,2,35);
+	else label=var2;
+	if substr(start,1,1) in ('P','p');
+	fmtname='$uname';
+run;
+proc sort data=xref nodupkeys;
+  by start;
+run;
+options nofmterr;
+proc format lib=myfmt cntlin=xref; 
+run;
+/*
+proc format cntlout=myfmt.fmtlib;
+run;
+*/
