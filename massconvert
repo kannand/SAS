@@ -1,0 +1,12 @@
+%macro o; sas /cml_jobs/cim/dev/users/k85671/convert/convert8.sas -sysparm %mend  o;
+
+
+%sysexec %str( 
+
+%o efdw101d;
+%o efdw544d;
+%o efdw549d;
+%o eqeuncp1;
+%o eqferisk;
+
+);
