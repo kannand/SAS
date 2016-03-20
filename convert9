@@ -1,0 +1,74 @@
+data _null_; 
+			%let p0=/cml_jobs/cim/dev/users/k85671/convert/;
+			%let p1=&p0.code_to_convert/;
+			%let p2=&p1.&sysparm..jcl;
+			%let p3=&p1.&sysparm._newcode.sas;
+			%let p4=&p1.&sysparm..sas;
+			%let p5=&p1.&sysparm._converted_code.sas;
+			%let p10=&p1.common_include_code.sas;
+			%let tmp=&p1._tmp;
+run;
+filename jclcode "&p2";
+filename newcode "&p3" ;
+filename final   "&p1.&sysparm._final.sas";
+libname  proclib "/cml_jobs/cim/dev/users/k85671/myfmt";			
+options fmtsearch=(proclib);
+/*proc format lib=proclib fmtlib;
+		 select $uname;
+run;*/
+data jclcode;
+  infile jclcode  truncover;
+	input @1 inrec $71.;
+  inrec=left(inrec);
+run;
+data commented(keep=outrec) files_used(keep=ddname file_used libname_value libname_value2) ;
+  set jclcode;
+	length libname_value $35.;
+	x=index(inrec,'DSN=');
+  if substr(inrec,3,8) ne '     ' 
+	then
+	  do;		
+		  ddname=substr(inrec,3,8);
+			lag_ddname = lag(ddname);
+		end;
+  if x > 0
+	then
+	  do;
+	    file_used=substr(inrec,x+4,35);
+			x=index(file_used,'(');
+			if x > 0
+			then mfile=substr(file_used,1,x-1);
+			else start='                                        ';
+			libname_value = mfile;
+			libname_value2 = trim(put(mfile,$uname.));
+			if ddname = ' ' then ddname = lag_ddname;
+			output files_used;
+		end;
+
+	inrec = tranwrd(inrec,'//','/*');
+	put '==inrec==' inrec;
+	if substr(inrec,1,2) = '/*'
+	then
+	   substr(inrec,70,2) = '*/';
+	length outrec $80.;
+	outrec=inrec;
+  output commented;
+run;
+data new_files_used(keep=outrec);
+  set files_used;	
+	new_out_rec = 'libname '||ddname;
+	out2=' &'||libname_value2;	
+	sc=';';
+	
+	if index(out2,'.') > 0 then out2 = "                                  ";
+	length outrec $80.;
+	outrec = trim(new_out_rec) ||" "||trim(out2)||" "||sc;
+run;
+
+data final;
+		 set commented      (keep=outrec) 
+		 		 new_files_used (keep=outrec);				
+		 file newcode;
+		 put @01 outrec;
+run;
+%sysexec %str(cat &p10 &p3 &p4 > &tmp ; rm &p3; cp &tmp &p5;rm &tmp );
